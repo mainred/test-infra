@@ -805,7 +805,10 @@ func (c *aksEngineDeployer) dockerLogin() error {
 	}
 	cmd := exec.Command("docker", "login", fmt.Sprintf("--username=%s", username), fmt.Sprintf("--password=%s", pwd), server)
 	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("failed Docker login with error: %w", err)
+		var outb, errb bytes.Buffer
+		cmd.Stdout = &outb
+		cmd.Stderr = &errb
+		return fmt.Errorf("failed Docker login with error: %w, %s, %s", err, outb.String(), errb.String())
 	}
 	log.Println("Docker login success.")
 	return nil
